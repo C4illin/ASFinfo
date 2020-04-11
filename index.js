@@ -25,15 +25,6 @@ FreeGameFindings.on("item", (message) => {
   handleMessage(message)
 })
 
-//subreddits to add:
-//FreeGamesForSteam
-//FreeGameFindings
-
-// const inbox = new snoostorm.InboxStream(client)
-// inbox.on("item", console.log)
-// inbox.end()
-// inbox.on("end", () => console.log("And now my watch has ended"))
-
 function handleMessage(message) {
   let appid = null
 
