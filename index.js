@@ -1,37 +1,75 @@
 const creds = require("./config.json")
 const Snoowrap = require("snoowrap")
 const snoostorm = require("snoostorm")
-const fetch = require('node-fetch')
+const fetch = require("node-fetch")
 
 // Build Snoowrap and Snoostorm clients
 const client = new Snoowrap(creds)
 const BOT_START = Date.now() / 1000
 
-//testingground4bots
-const submissions = new snoostorm.SubmissionStream(client, { subreddit: "FreeGameFindings", limit: 10, pollTime: 2000 })
-submissions.on("item", (message) => {
-  if(message.created_utc < BOT_START) return
+// There has to be a better way to do this
+const FreeGamesForPC = new snoostorm.SubmissionStream(client, {subreddit: "FreeGamesForPC", limit: 2, pollTime: 5000})
+FreeGamesForPC.on("item", (message) => {
+  handleMessage(message)
+})
+const testingground4bots = new snoostorm.SubmissionStream(client, {subreddit: "testingground4bots", limit: 1, pollTime: 10000})
+testingground4bots.on("item", (message) => {
+  handleMessage(message)
+})
+const FreeGamesForSteam = new snoostorm.SubmissionStream(client, {subreddit: "FreeGamesForSteam", limit: 2, pollTime: 5000})
+FreeGamesForSteam.on("item", (message) => {
+  handleMessage(message)
+})
+const FreeGameFindings = new snoostorm.SubmissionStream(client, {subreddit: "FreeGameFindings", limit: 2, pollTime: 5000})
+FreeGameFindings.on("item", (message) => {
+  handleMessage(message)
+})
+
+//subreddits to add:
+//FreeGamesForSteam
+//FreeGameFindings
+
+// const inbox = new snoostorm.InboxStream(client)
+// inbox.on("item", console.log)
+// inbox.end()
+// inbox.on("end", () => console.log("And now my watch has ended"))
+
+function handleMessage(message) {
+  let appid = null
+
+  if(message.created_utc < BOT_START) {
+    console.log(message.url)
+    return
+  }
+
   let urlsplit = message.url.split("/")
   if (urlsplit[2] == "store.steampowered.com") {
-    getPackages(urlsplit[4], (result) => {
+    appid = (urlsplit[4])
+  } else if (message.selftext.includes("https://store.steampowered.com/app/")) {
+    appid = message.selftext.slice(message.selftext.indexOf("https://store.steampowered.com/app/")+35).split("/")[0]
+  }
+
+  if (appid != null) {
+    getPackages(appid, (result) => {
       if (result[0].length > 0) {
         let asfmsg = `\`\`\`\n!addlicense asf ${result[0].join(" ")}\n\`\`\``
         if (result[1].length > 0) {
-          asfmsg += `\nFree dlc appID:  ${result[1].join(" ")}`
+          asfmsg += "\nFree DLC (couldn't find packageID):"
+          result[1].forEach(elem => {
+            asfmsg += ` [${elem}](https://store.steampowered.com/app/${elem})`
+          })
         }
         asfmsg += "\n\n^I'm a bot | [What is ASF](https://github.com/JustArchiNET/ArchiSteamFarm) | [Contact](https://www.reddit.com/message/compose?to=ChilladeChillin)".replace(/ /gi, "&nbsp;")
-        console.log(asfmsg)
+        console.log(asfmsg.slice(0, -187))
         message.reply(asfmsg)
-      }
+      } 
     })
+    console.log(message.url)
+    console.log(appid)
+  } else {
+    console.log("not processed: " + message.url)
   }
-  console.log(message.url)
-})
-
-const inbox = new snoostorm.InboxStream(client)
-inbox.on("item", console.log)
-inbox.end()
-inbox.on("end", () => console.log("And now my watch has ended"))
+}
 
 function isDLCfree(dlc, list) {
   return new Promise((resolve, reject) => {
