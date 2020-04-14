@@ -8,22 +8,31 @@ const client = new Snoowrap(creds)
 const BOT_START = Date.now() / 1000
 
 // There has to be a better way to do this
-const FreeGamesForPC = new snoostorm.SubmissionStream(client, {subreddit: "FreeGamesForPC", limit: 2, pollTime: 5000})
+const FreeGamesForPC = new snoostorm.SubmissionStream(client, {subreddit: "FreeGamesForPC", limit: 2, pollTime: 10000})
 FreeGamesForPC.on("item", (message) => {
   handleMessage(message)
 })
-const testingground4bots = new snoostorm.SubmissionStream(client, {subreddit: "testingground4bots", limit: 1, pollTime: 10000})
+const testingground4bots = new snoostorm.SubmissionStream(client, {subreddit: "testingground4bots", limit: 1, pollTime: 20000})
 testingground4bots.on("item", (message) => {
   handleMessage(message)
 })
-const FreeGamesForSteam = new snoostorm.SubmissionStream(client, {subreddit: "FreeGamesForSteam", limit: 2, pollTime: 5000})
+const FreeGamesForSteam = new snoostorm.SubmissionStream(client, {subreddit: "FreeGamesForSteam", limit: 2, pollTime: 10000})
 FreeGamesForSteam.on("item", (message) => {
   handleMessage(message)
 })
-const FreeGameFindings = new snoostorm.SubmissionStream(client, {subreddit: "FreeGameFindings", limit: 2, pollTime: 5000})
+const FreeGameFindings = new snoostorm.SubmissionStream(client, {subreddit: "FreeGameFindings", limit: 2, pollTime: 10000})
 FreeGameFindings.on("item", (message) => {
   handleMessage(message)
 })
+const FreeGamesOnSteam = new snoostorm.SubmissionStream(client, {subreddit: "FreeGamesOnSteam", limit: 2, pollTime: 10000})
+FreeGamesOnSteam.on("item", (message) => {
+  handleMessage(message)
+})
+const freegames = new snoostorm.SubmissionStream(client, {subreddit: "freegames", limit: 2, pollTime: 10000})
+freegames.on("item", (message) => {
+  handleMessage(message)
+})
+
 
 function handleMessage(message) {
   let appid = null
@@ -40,7 +49,7 @@ function handleMessage(message) {
     appid = message.selftext.slice(message.selftext.indexOf("https://store.steampowered.com/app/")+35).split("/")[0]
   }
 
-  if (appid != null) {
+  if (appid != null) { 
     getPackages(appid, (result) => {
       if (result[0].length > 0) {
         let asfmsg = `\`\`\`\n!addlicense asf ${result[0].join(" ")}\n\`\`\``
