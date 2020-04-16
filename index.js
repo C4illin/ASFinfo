@@ -71,13 +71,27 @@ function handleMessage(message) {
   }
 }
 
-function isDLCfree(dlc, list) {
+function isDLCfree(dlc, dlclist, packlist) {
   return new Promise((resolve, reject) => {
-    fetch(`https://store.steampowered.com/api/appdetails?appids=${dlc}&filters=basic`)
+    fetch(`https://store.steampowered.com/api/appdetails?appids=${dlc}&filters=basic,packages`)
       .then(res => res.json())
       .then(body => {
-        if (body[dlc].data.is_free) {
-          list.push(dlc)
+        let packageData = body[dlc].data.package_groups
+        if (packageData.length) {
+          let counter = 0
+          packageData[0].subs.forEach(pack => {
+            counter++
+            if (pack.is_free_license) {
+              packlist.push(pack.packageid)
+              counter = 0
+            } else if (counter == packageData[0].subs.length) {
+              if (body[dlc].data.is_free) {
+                dlclist.push(dlc)
+              }
+            }
+          })
+        } else if (body[dlc].data.is_free) {
+          dlclist.push(dlc)
         }
         resolve()
       })
@@ -103,7 +117,7 @@ function getPackages(appid, callback) {
         })
         let packagesDLC = packageData.dlc
         if (packagesDLC) {
-          let requests = packagesDLC.map((dlc) => isDLCfree(dlc, freeDLC))
+          let requests = packagesDLC.map((dlc) => isDLCfree(dlc, freeDLC, freePackages))
           Promise.all(requests).then(() => {
             callback([freePackages, freeDLC])
           })
@@ -117,10 +131,17 @@ function getPackages(appid, callback) {
     .catch(err => {throw(err)})
 }
 
-// getPackages("1135570", (result) => { //urlsplit[4]
-//   if (result != []) {
-//     let asfmsg = "!addlicense asf "+result.join(" ")
+// getPackages(1135570, (result) => {
+//   console.log(result)
+//   if (result[0].length > 0) {
+//     let asfmsg = `\`\`\`\n!addlicense asf ${result[0].join(" ")}\n\`\`\``
+//     if (result[1].length > 0) {
+//       asfmsg += "\nFree DLC (couldn't find packageID):"
+//       result[1].forEach(elem => {
+//         asfmsg += ` [${elem}](https://store.steampowered.com/app/${elem})`
+//       })
+//     }
+//     asfmsg += "\n\n^I'm a bot | [What is ASF](https://github.com/JustArchiNET/ArchiSteamFarm) | [Contact](https://www.reddit.com/message/compose?to=ChilladeChillin)".replace(/ /gi, "&nbsp;")
 //     console.log(asfmsg)
-//     // message.reply()
-//   }
+//   } 
 // })
