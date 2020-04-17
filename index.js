@@ -134,19 +134,19 @@ function getPackages(appid, callback) {
     .catch(err => {throw(err)})
 }
 
-getPackages(728880, (result) => {
-  console.log(result)
-  if (result[1].length > 0 || result[0].length > 0) {
-    let asfmsg = `\`\`\`\n!addlicense asf`
-    if (result[0].length > 0) {
-      asfmsg += " s/"
-      asfmsg += result[0].join(",s/")
-    }
-    if (result[1].length > 0) {
-      asfmsg += " a/"
-      asfmsg += result[1].join(",a/")
-    }
-    asfmsg += "\n```\n\n^I'm a bot | [What is ASF](https://github.com/JustArchiNET/ArchiSteamFarm) | [Contact](https://www.reddit.com/message/compose?to=ChilladeChillin)".replace(/ /gi, "&nbsp;")
-    console.log(asfmsg)
-  } 
-})
+// getPackages(728880, (result) => {
+//   console.log(result)
+//   if (result[1].length > 0 || result[0].length > 0) {
+//     let asfmsg = `\`\`\`\n!addlicense asf`
+//     if (result[0].length > 0) {
+//       asfmsg += " s/"
+//       asfmsg += result[0].join(",s/")
+//     }
+//     if (result[1].length > 0) {
+//       asfmsg += " a/"
+//       asfmsg += result[1].join(",a/")
+//     }
+//     asfmsg += "\n```\n\n^I'm a bot | [What is ASF](https://github.com/JustArchiNET/ArchiSteamFarm) | [Contact](https://www.reddit.com/message/compose?to=ChilladeChillin)".replace(/ /gi, "&nbsp;")
+//     console.log(asfmsg)
+//   } 
+// })
