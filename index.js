@@ -52,14 +52,17 @@ function handleMessage(message) {
   if (appid != null) { 
     getPackages(appid, (result) => {
       if (result[0].length > 0) {
-        let asfmsg = `\`\`\`\n!addlicense asf ${result[0].join(" ")}\n\`\`\``
-        if (result[1].length > 0) {
-          asfmsg += "\nFree DLC (couldn't find packageID):"
-          result[1].forEach(elem => {
-            asfmsg += ` [${elem}](https://store.steampowered.com/app/${elem})`
-          })
+        let asfmsg = `\`\`\`\n!addlicense asf`
+        if (result[0].length > 0) {
+          asfmsg += " s/"
+          asfmsg += result[0].join(" s/")
         }
-        asfmsg += "\n\n^I'm a bot | [What is ASF](https://github.com/JustArchiNET/ArchiSteamFarm) | [Contact](https://www.reddit.com/message/compose?to=ChilladeChillin)".replace(/ /gi, "&nbsp;")
+        console.log(result)
+        if (result[1].length > 0) {
+          asfmsg += " a/"
+          asfmsg += result[1].join(" a/")
+        }
+        asfmsg += "\n```\n\n^I'm a bot | [What is ASF](https://github.com/JustArchiNET/ArchiSteamFarm) | [Contact](https://www.reddit.com/message/compose?to=ChilladeChillin)".replace(/ /gi, "&nbsp;")
         console.log(asfmsg.slice(0, -187))
         message.reply(asfmsg)
       } 
@@ -131,17 +134,19 @@ function getPackages(appid, callback) {
     .catch(err => {throw(err)})
 }
 
-// getPackages(1135570, (result) => {
-//   console.log(result)
-//   if (result[0].length > 0) {
-//     let asfmsg = `\`\`\`\n!addlicense asf ${result[0].join(" ")}\n\`\`\``
-//     if (result[1].length > 0) {
-//       asfmsg += "\nFree DLC (couldn't find packageID):"
-//       result[1].forEach(elem => {
-//         asfmsg += ` [${elem}](https://store.steampowered.com/app/${elem})`
-//       })
-//     }
-//     asfmsg += "\n\n^I'm a bot | [What is ASF](https://github.com/JustArchiNET/ArchiSteamFarm) | [Contact](https://www.reddit.com/message/compose?to=ChilladeChillin)".replace(/ /gi, "&nbsp;")
-//     console.log(asfmsg)
-//   } 
-// })
+getPackages(728880, (result) => {
+  console.log(result)
+  if (result[1].length > 0 || result[0].length > 0) {
+    let asfmsg = `\`\`\`\n!addlicense asf`
+    if (result[0].length > 0) {
+      asfmsg += " s/"
+      asfmsg += result[0].join(",s/")
+    }
+    if (result[1].length > 0) {
+      asfmsg += " a/"
+      asfmsg += result[1].join(",a/")
+    }
+    asfmsg += "\n```\n\n^I'm a bot | [What is ASF](https://github.com/JustArchiNET/ArchiSteamFarm) | [Contact](https://www.reddit.com/message/compose?to=ChilladeChillin)".replace(/ /gi, "&nbsp;")
+    console.log(asfmsg)
+  } 
+})
