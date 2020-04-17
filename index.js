@@ -47,6 +47,8 @@ function handleMessage(message) {
     appid = (urlsplit[4])
   } else if (message.selftext.includes("https://store.steampowered.com/app/")) {
     appid = message.selftext.slice(message.selftext.indexOf("https://store.steampowered.com/app/")+35).split("/")[0]
+  } else if (urlsplit[2] == "steamdb.info") {
+    appid = (urlsplit[4])
   }
 
   if (appid != null) { 
@@ -156,7 +158,8 @@ function getPackages(appid, callback) {
 }
 
 // Used to test appids manually
-// getPackages(346110, (result) => {
+
+// getPackages(274980, (result) => {
 //   console.log(result)
 //   if (result[1].length > 0 || result[0].length > 0) {
 //     let asfmsg = `\`\`\`\n!addlicense asf`
