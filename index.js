@@ -12,7 +12,7 @@ const FreeGamesForPC = new snoostorm.SubmissionStream(client, {subreddit: "FreeG
 FreeGamesForPC.on("item", (message) => {
   handleMessage(message)
 })
-const testingground4bots = new snoostorm.SubmissionStream(client, {subreddit: "testingground4bots", limit: 1, pollTime: 20000})
+const testingground4bots = new snoostorm.SubmissionStream(client, {subreddit: "testingground4bots", limit: 2, pollTime: 20000})
 testingground4bots.on("item", (message) => {
   handleMessage(message)
 })
@@ -55,14 +55,18 @@ function handleMessage(message) {
         let asfmsg = `\`\`\`\n!addlicense asf`
         if (result[0].length > 0) {
           asfmsg += " s/"
-          asfmsg += result[0].join(" s/")
+          asfmsg += result[0].join(",s/")
         }
-        console.log(result)
         if (result[1].length > 0) {
           asfmsg += " a/"
-          asfmsg += result[1].join(" a/")
+          asfmsg += result[1].join(",a/")
         }
-        asfmsg += "\n```\n\n^I'm a bot | [What is ASF](https://github.com/JustArchiNET/ArchiSteamFarm) | [Contact](https://www.reddit.com/message/compose?to=ChilladeChillin)".replace(/ /gi, "&nbsp;")
+        if (result[2]) {
+          asfmsg += "\n```\nThis is most likely free DLC for a non-free game"
+        } else {
+          asfmsg += "\n```"
+        }
+        asfmsg += "\n\n^I'm a bot | [What is ASF](https://github.com/JustArchiNET/ArchiSteamFarm) | [Contact](https://www.reddit.com/message/compose?to=ChilladeChillin)".replace(/ /gi, "&nbsp;")
         console.log(asfmsg.slice(0, -187))
         message.reply(asfmsg)
       } 
@@ -112,20 +116,37 @@ function getPackages(appid, callback) {
       let freeDLC = []
       let packageData  = body[appid].data
       if (packageData) {
-        let packagesSubs = packageData.package_groups[0].subs
-        packagesSubs.forEach(pack => {
-          if (pack.is_free_license) {
-            freePackages.push(pack.packageid)
-          }
-        })
-        let packagesDLC = packageData.dlc
-        if (packagesDLC) {
-          let requests = packagesDLC.map((dlc) => isDLCfree(dlc, freeDLC, freePackages))
-          Promise.all(requests).then(() => {
-            callback([freePackages, freeDLC])
+        let paid = false
+        if (packageData.type == "dlc") {
+          getPackages(packageData.fullgame.appid, (result) => {
+            freePackages = result[0]
+            freeDLC = result[1]
+            if (result[2]) { // This means it is a dlc for a non-free game
+              paid = true
+            }
+            callback([freePackages, freeDLC, paid])
           })
         } else {
-          callback([freePackages, freeDLC])
+          let packagesSubs = packageData.package_groups[0].subs
+          packagesSubs.forEach(pack => {
+            if (pack.is_free_license) {
+              freePackages.push(pack.packageid)
+            }
+          })
+
+          if (freePackages.length == 0) {
+            paid = true
+          }
+
+          let packagesDLC = packageData.dlc
+          if (packagesDLC) {
+            let requests = packagesDLC.map((dlc) => isDLCfree(dlc, freeDLC, freePackages))
+            Promise.all(requests).then(() => {
+              callback([freePackages, freeDLC, paid])
+            })
+          } else {
+            callback([freePackages, freeDLC, paid])
+          }
         }
       } else {
         return(null)
@@ -134,7 +155,8 @@ function getPackages(appid, callback) {
     .catch(err => {throw(err)})
 }
 
-// getPackages(728880, (result) => {
+// Used to test appids manually
+// getPackages(346110, (result) => {
 //   console.log(result)
 //   if (result[1].length > 0 || result[0].length > 0) {
 //     let asfmsg = `\`\`\`\n!addlicense asf`
@@ -146,7 +168,12 @@ function getPackages(appid, callback) {
 //       asfmsg += " a/"
 //       asfmsg += result[1].join(",a/")
 //     }
-//     asfmsg += "\n```\n\n^I'm a bot | [What is ASF](https://github.com/JustArchiNET/ArchiSteamFarm) | [Contact](https://www.reddit.com/message/compose?to=ChilladeChillin)".replace(/ /gi, "&nbsp;")
+//     if (result[2]) {
+//       asfmsg += "\n```\nThis is most likely free DLC for a non-free game"
+//     } else {
+//       asfmsg += "\n```"
+//     }
+//     asfmsg += "\n\n^I'm a bot | [What is ASF](https://github.com/JustArchiNET/ArchiSteamFarm) | [Contact](https://www.reddit.com/message/compose?to=ChilladeChillin)".replace(/ /gi, "&nbsp;")
 //     console.log(asfmsg)
 //   } 
 // })
