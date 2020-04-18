@@ -39,7 +39,7 @@ function handleMessage(message) {
 
   if(message.created_utc < BOT_START) {
     console.log(message.url)
-    // return
+    return
   }
 
   let urlsplit = message.url.split("/")
@@ -80,7 +80,7 @@ function handleMessage(message) {
 
         asfmsg += "\n^I'm a bot | [What is ASF](https://github.com/JustArchiNET/ArchiSteamFarm) | [Contact](https://www.reddit.com/message/compose?to=ChilladeChillin)".replace(/ /gi, "&nbsp;")
         console.log(asfmsg.slice(0, -186))
-        // message.reply(asfmsg)
+        message.reply(asfmsg)
       }
     })
     console.log(message.url)
