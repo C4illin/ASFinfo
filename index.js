@@ -39,7 +39,7 @@ function handleMessage(message) {
 
   if(message.created_utc < BOT_START) {
     console.log(message.url)
-    return
+    // return
   }
 
   let urlsplit = message.url.split("/")
@@ -53,25 +53,35 @@ function handleMessage(message) {
 
   if (appid != null) { 
     getPackages(appid, (result) => {
-      if (result[0].length > 0) {
-        let asfmsg = `\`\`\`\n!addlicense asf`
+      if (result[0].length > 0 || result[1].length > 0) {
+        let asfmsg = "```\n!addlicense asf"
+
         if (result[0].length > 0) {
           asfmsg += " s/"
           asfmsg += result[0].join(",s/")
         }
+
         if (result[1].length > 0) {
-          asfmsg += " a/"
+          if (asfmsg.length > 23) {
+            asfmsg += ",a/"
+          } else {
+            asfmsg += " a/"
+          }      
           asfmsg += result[1].join(",a/")
         }
+
+        asfmsg += "\n```\n"
+
         if (result[2]) {
-          asfmsg += "\n```\nThis is most likely free DLC for a non-free game"
-        } else {
-          asfmsg += "\n```"
+          asfmsg += "This is most likely free DLC for a non-free game."
+        } else if (result[3]) {
+          asfmsg += "This is most likely permanently free."
         }
-        asfmsg += "\n\n^I'm a bot | [What is ASF](https://github.com/JustArchiNET/ArchiSteamFarm) | [Contact](https://www.reddit.com/message/compose?to=ChilladeChillin)".replace(/ /gi, "&nbsp;")
-        console.log(asfmsg.slice(0, -187))
-        message.reply(asfmsg)
-      } 
+
+        asfmsg += "\n^I'm a bot | [What is ASF](https://github.com/JustArchiNET/ArchiSteamFarm) | [Contact](https://www.reddit.com/message/compose?to=ChilladeChillin)".replace(/ /gi, "&nbsp;")
+        console.log(asfmsg.slice(0, -186))
+        // message.reply(asfmsg)
+      }
     })
     console.log(message.url)
     console.log(appid)
@@ -114,11 +124,12 @@ function getPackages(appid, callback) {
   fetch(`https://store.steampowered.com/api/appdetails?appids=${appid}&filters=basic,packages`)
     .then(res => res.json())
     .then(body => {
-      let freePackages = []
-      let freeDLC = []
       let packageData  = body[appid].data
       if (packageData) {
+        let freePackages = []
+        let freeDLC = []
         let paid = false
+        let permanentFree = false
         if (packageData.type == "dlc") {
           getPackages(packageData.fullgame.appid, (result) => {
             freePackages = result[0]
@@ -126,28 +137,34 @@ function getPackages(appid, callback) {
             if (result[2]) { // This means it is a dlc for a non-free game
               paid = true
             }
-            callback([freePackages, freeDLC, paid])
+            callback([freePackages, freeDLC, paid, permanentFree])
           })
         } else {
-          let packagesSubs = packageData.package_groups[0].subs
-          packagesSubs.forEach(pack => {
-            if (pack.is_free_license) {
-              freePackages.push(pack.packageid)
+          if (packageData.package_groups.length > 0) {
+            let packagesSubs = packageData.package_groups[0].subs
+            packagesSubs.forEach(pack => {
+              if (pack.is_free_license) {
+                freePackages.push(pack.packageid)
+              }
+            })
+            if (freePackages.length == 0) {
+              paid = true
             }
-          })
-
-          if (freePackages.length == 0) {
+          } else if (packageData.is_free) {
+            freeDLC.push(packageData.steam_appid)
+            permanentFree = true
+          } else {
             paid = true
           }
-
+          
           let packagesDLC = packageData.dlc
           if (packagesDLC) {
             let requests = packagesDLC.map((dlc) => isDLCfree(dlc, freeDLC, freePackages))
             Promise.all(requests).then(() => {
-              callback([freePackages, freeDLC, paid])
+              callback([freePackages, freeDLC, paid, permanentFree])
             })
           } else {
-            callback([freePackages, freeDLC, paid])
+            callback([freePackages, freeDLC, paid, permanentFree])
           }
         }
       } else {
@@ -159,24 +176,34 @@ function getPackages(appid, callback) {
 
 // Used to test appids manually
 
-// getPackages(274980, (result) => {
-//   console.log(result)
-//   if (result[1].length > 0 || result[0].length > 0) {
+// good test appIDs
+// 570, 1250870, 346110
+
+// getPackages(570, (result) => {
+//   // console.log(result)
+//   if (result[0].length > 0 || result[1].length > 0) {
 //     let asfmsg = `\`\`\`\n!addlicense asf`
 //     if (result[0].length > 0) {
 //       asfmsg += " s/"
 //       asfmsg += result[0].join(",s/")
 //     }
 //     if (result[1].length > 0) {
-//       asfmsg += " a/"
+//       if (asfmsg.length > 23) {
+//         asfmsg += ",a/"
+//       } else {
+//         asfmsg += " a/"
+//       }      
 //       asfmsg += result[1].join(",a/")
 //     }
+
+//     asfmsg += "\n```\n"
+
 //     if (result[2]) {
-//       asfmsg += "\n```\nThis is most likely free DLC for a non-free game"
-//     } else {
-//       asfmsg += "\n```"
+//       asfmsg += "This is most likely free DLC for a non-free game"
+//     } else if (result[3]) {
+//       asfmsg += "This is most likely permanently free"
 //     }
-//     asfmsg += "\n\n^I'm a bot | [What is ASF](https://github.com/JustArchiNET/ArchiSteamFarm) | [Contact](https://www.reddit.com/message/compose?to=ChilladeChillin)".replace(/ /gi, "&nbsp;")
+//     asfmsg += "\n^I'm a bot | [What is ASF](https://github.com/JustArchiNET/ArchiSteamFarm) | [Contact](https://www.reddit.com/message/compose?to=ChilladeChillin)".replace(/ /gi, "&nbsp;")
 //     console.log(asfmsg)
 //   } 
 // })
