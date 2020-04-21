@@ -73,12 +73,12 @@ function handleMessage(message) {
         asfmsg += "\n```\n"
 
         if (result[2]) {
-          asfmsg += "This is most likely free DLC for a non-free game."
+          asfmsg += "There is a chance this is free DLC for a non-free game."
         } else if (result[3]) {
           asfmsg += "This is most likely permanently free."
         }
 
-        asfmsg += "\n^I'm a bot | [What is ASF](https://github.com/JustArchiNET/ArchiSteamFarm) | [Contact](https://www.reddit.com/message/compose?to=ChilladeChillin)".replace(/ /gi, "&nbsp;")
+        asfmsg += "\n\n^I'm a bot | [What is ASF](https://github.com/JustArchiNET/ArchiSteamFarm) | [Contact](https://www.reddit.com/message/compose?to=ChilladeChillin)".replace(/ /gi, "&nbsp;")
         console.log(asfmsg.slice(0, -186))
         message.reply(asfmsg)
       }
