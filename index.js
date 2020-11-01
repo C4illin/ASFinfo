@@ -54,7 +54,7 @@ function handleMessage(message) {
   if (appid != null) { 
     getPackages(appid, (result) => {
       if (result[0].length > 0 || result[1].length > 0) {
-        let asfmsg = "```\n!addlicense asf"
+        let asfmsg = "    !addlicense asf"
 
         if (result[0].length > 0) {
           asfmsg += " s/"
@@ -70,7 +70,7 @@ function handleMessage(message) {
           asfmsg += result[1].join(",a/")
         }
 
-        asfmsg += "\n```\n"
+        asfmsg += "\n"
 
         if (result[2]) {
           asfmsg += "There is a chance this is free DLC for a non-free game."
