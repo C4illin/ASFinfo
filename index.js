@@ -1,7 +1,13 @@
 const creds = require("./config.json")
+const gh = require("./gh-config.json")
 const Snoowrap = require("snoowrap")
 const snoostorm = require("snoostorm")
 const fetch = require("node-fetch")
+const { Octokit } = require("@octokit/rest")
+
+const octokit = new Octokit({
+  auth: `token ${gh.ghToken}`
+})
 
 // Build Snoowrap and Snoostorm clients
 const client = new Snoowrap(creds)
@@ -69,7 +75,7 @@ function handleMessage(message) {
           }      
           asfmsg += result[1].join(",a/")
         }
-
+        let idsToClaim = asfmsg
         asfmsg += "\n"
 
         if (result[2]) {
@@ -79,8 +85,24 @@ function handleMessage(message) {
         }
 
         asfmsg += "\n\n^I'm a bot | [What is ASF](https://github.com/JustArchiNET/ArchiSteamFarm) | [Info](https://www.reddit.com/user/ASFinfo/comments/jmac24/)".replace(/ /gi, "&nbsp;")
-        console.log(asfmsg.slice(0, -186))
+        console.log(idsToClaim)
         message.reply(asfmsg)
+
+        // Experimental gist to keep track of free games
+        octokit.gists.get({ gist_id: gh.gistId }).then(gist => {
+          let newContent = (gist.data.files['Steam Codes'].content + "\n" + idsToClaim.substring(20).replaceAll(",","\n")).trim()
+          newContent = Array.from(new Set(newContent.split("\n"))).join("\n")
+          return newContent
+        }).then((newContent) => {
+          octokit.gists.update({
+            gist_id: gh.gistId,
+            files: {
+              ['Steam Codes']: {
+                content: newContent
+              }
+            }
+          })
+        })
       }
     })
     console.log(message.url)
@@ -182,7 +204,7 @@ function getPackages(appid, callback) {
 // getPackages(570, (result) => {
 //   // console.log(result)
 //   if (result[0].length > 0 || result[1].length > 0) {
-//     let asfmsg = `\`\`\`\n!addlicense asf`
+//     let asfmsg = "    !addlicense asf"
 //     if (result[0].length > 0) {
 //       asfmsg += " s/"
 //       asfmsg += result[0].join(",s/")
@@ -195,15 +217,28 @@ function getPackages(appid, callback) {
 //       }      
 //       asfmsg += result[1].join(",a/")
 //     }
-
-//     asfmsg += "\n```\n"
-
+//     let idsToClaim = asfmsg
+//     asfmsg += "\n"
 //     if (result[2]) {
-//       asfmsg += "This is most likely free DLC for a non-free game"
+//       asfmsg += "There is a chance this is free DLC for a non-free game."
 //     } else if (result[3]) {
-//       asfmsg += "This is most likely permanently free"
+//       asfmsg += "This is most likely permanently free."
 //     }
-//     asfmsg += "\n^I'm a bot | [What is ASF](https://github.com/JustArchiNET/ArchiSteamFarm) | [Contact](https://www.reddit.com/message/compose?to=ChilladeChillin)".replace(/ /gi, "&nbsp;")
-//     console.log(asfmsg)
-//   } 
+//     asfmsg += "\n\n^I'm a bot | [What is ASF](https://github.com/JustArchiNET/ArchiSteamFarm) | [Info](https://www.reddit.com/user/ASFinfo/comments/jmac24/)".replace(/ /gi, "&nbsp;")
+//     console.log(idsToClaim)
+//     octokit.gists.get({ gist_id: gh.gistId }).then(gist => {
+//       let newContent = (gist.data.files['Steam Codes'].content + "\n" + idsToClaim.substring(20).replaceAll(",","\n")).trim()
+//       newContent = Array.from(new Set(newContent.split("\n"))).join("\n")
+//       return newContent
+//     }).then((newContent) => {
+//       octokit.gists.update({
+//         gist_id: gh.gistId,
+//         files: {
+//           ['Steam Codes']: {
+//             content: newContent
+//           }
+//         }
+//       })
+//     })
+//   }
 // })
