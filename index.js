@@ -90,7 +90,7 @@ function handleMessage(message) {
 
         // Experimental gist to keep track of free games
         octokit.gists.get({ gist_id: gh.gistId }).then(gist => {
-          let newContent = (gist.data.files['Steam Codes'].content + "\n" + idsToClaim.substring(20).replaceAll(",","\n")).trim()
+          let newContent = (gist.data.files['Steam Codes'].content + "\n" + idsToClaim.substring(20).replace(/,/g,"\n")).trim()
           newContent = Array.from(new Set(newContent.split("\n"))).join("\n")
           return newContent
         }).then((newContent) => {
