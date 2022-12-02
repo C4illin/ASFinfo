@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "@octokit/rest": "^18.0.9",
+    "dotenv": "^16.0.3",
     "node-fetch": "^2.6.7",
     "snoostorm": "^1.3.0",
     "snoowrap": "^1.21.0"

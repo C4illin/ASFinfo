@@ -1,13 +1,20 @@
-const creds = require("./config.json")
-const gh = require("./gh-config.json")
+require('dotenv').config()
 const Snoowrap = require("snoowrap")
 const snoostorm = require("snoostorm")
 const fetch = require("node-fetch")
 const { Octokit } = require("@octokit/rest")
 
 const octokit = new Octokit({
-  auth: `token ${gh.ghToken}`
+  auth: `token ${process.env.ghToken}`
 })
+
+const creds = {
+  "userAgent": process.env.userAgent,
+  "clientId": process.env.clientId,
+  "clientSecret": process.env.clientSecret,
+  "username": process.env.RedditUsername,
+  "password": process.env.RedditPassword
+}
 
 // Build Snoowrap and Snoostorm clients
 const client = new Snoowrap(creds)
@@ -89,13 +96,13 @@ function handleMessage(message) {
         message.reply(asfmsg)
 
         // Experimental gist to keep track of free games
-        octokit.gists.get({ gist_id: gh.gistId }).then(gist => {
+        octokit.gists.get({ gist_id: process.env.gistId }).then(gist => {
           let newContent = (gist.data.files['Steam Codes'].content + "\n" + idsToClaim.substring(20).replace(/,/g,"\n")).trim()
           newContent = Array.from(new Set(newContent.split("\n"))).join("\n")
           return newContent
         }).then((newContent) => {
           octokit.gists.update({
-            gist_id: gh.gistId,
+            gist_id: process.env.gistId,
             files: {
               ['Steam Codes']: {
                 content: newContent
@@ -226,13 +233,13 @@ function getPackages(appid, callback) {
 //     }
 //     asfmsg += "\n\n^I'm a bot | [What is ASF](https://github.com/JustArchiNET/ArchiSteamFarm) | [Info](https://www.reddit.com/user/ASFinfo/comments/jmac24/)".replace(/ /gi, "&nbsp;")
 //     console.log(idsToClaim)
-//     octokit.gists.get({ gist_id: gh.gistId }).then(gist => {
+//     octokit.gists.get({ gist_id: process.env.gistId }).then(gist => {
 //       let newContent = (gist.data.files['Steam Codes'].content + "\n" + idsToClaim.substring(20).replaceAll(",","\n")).trim()
 //       newContent = Array.from(new Set(newContent.split("\n"))).join("\n")
 //       return newContent
 //     }).then((newContent) => {
 //       octokit.gists.update({
-//         gist_id: gh.gistId,
+//         gist_id: process.env.gistId,
 //         files: {
 //           ['Steam Codes']: {
 //             content: newContent

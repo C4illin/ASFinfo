@@ -1,0 +1,4 @@
+node_modules
+old
+.github
+docker-compose.yml

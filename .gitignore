@@ -1,3 +1,5 @@
 /node_modules
 /config.json
 /gh-config.json
+docker-compose.yml
+.env
