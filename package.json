@@ -13,6 +13,6 @@
     "dotenv": "^16.0.3",
     "node-fetch": "^2.6.7",
     "snoostorm": "^1.5.2",
-    "snoowrap": "^1.21.0"
+    "snoowrap": "^1.23.0"
   }
 }
