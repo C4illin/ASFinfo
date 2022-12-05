@@ -1,6 +1,5 @@
 require('dotenv').config()
 const Snoowrap = require("snoowrap")
-const snoostorm = require("snoostorm")
 const fetch = require("node-fetch")
 const { Octokit } = require("@octokit/rest")
 
@@ -20,31 +19,56 @@ const creds = {
 const client = new Snoowrap(creds)
 const BOT_START = Date.now() / 1000
 
-// There has to be a better way to do this
-const FreeGamesForPC = new snoostorm.SubmissionStream(client, {subreddit: "FreeGamesForPC", limit: 1, pollTime: 10000})
-FreeGamesForPC.on("item", (message) => {
-  handleMessage(message)
-})
-const testingground4bots = new snoostorm.SubmissionStream(client, {subreddit: "testingground4bots", limit: 1, pollTime: 60000})
-testingground4bots.on("item", (message) => {
-  handleMessage(message)
-})
-const FreeGamesForSteam = new snoostorm.SubmissionStream(client, {subreddit: "FreeGamesForSteam", limit: 1, pollTime: 10000})
-FreeGamesForSteam.on("item", (message) => {
-  handleMessage(message)
-})
-const FreeGameFindings = new snoostorm.SubmissionStream(client, {subreddit: "FreeGameFindings", limit: 1, pollTime: 10000})
-FreeGameFindings.on("item", (message) => {
-  handleMessage(message)
-})
-const FreeGamesOnSteam = new snoostorm.SubmissionStream(client, {subreddit: "FreeGamesOnSteam", limit: 1, pollTime: 10000})
-FreeGamesOnSteam.on("item", (message) => {
-  handleMessage(message)
-})
-const freegames = new snoostorm.SubmissionStream(client, {subreddit: "freegames", limit: 1, pollTime: 10000})
-freegames.on("item", (message) => {
-  handleMessage(message)
-})
+let ids = []
+
+const subreddits = ['FreeGameFindings',"FreeGamesForPC","testingground4bots","FreeGamesForSteam","FreeGamesOnSteam","freegames"]
+
+function checkForPosts() {
+  console.log("Checking for posts")
+  subreddits.forEach(subreddit => {
+    client.getSubreddit(subreddit).getNew({limit: 3}).then(posts => {
+      posts.forEach(post => {
+        handlePost(post)
+      })
+    })
+  })
+  setTimeout(checkForPosts, 10000)
+}
+
+checkForPosts()
+
+function handlePost(post) {
+  if (!ids.includes(post.id)) {
+    ids.push(post.id)
+    handleMessage(post)
+  }
+}
+
+
+// const FreeGamesForPC = new snoostorm.SubmissionStream(client, {subreddit: "FreeGamesForPC", limit: 1, pollTime: 10000})
+// FreeGamesForPC.on("item", (message) => {
+//   handleMessage(message)
+// })
+// const testingground4bots = new snoostorm.SubmissionStream(client, {subreddit: "testingground4bots", limit: 1, pollTime: 60000})
+// testingground4bots.on("item", (message) => {
+//   handleMessage(message)
+// })
+// const FreeGamesForSteam = new snoostorm.SubmissionStream(client, {subreddit: "FreeGamesForSteam", limit: 1, pollTime: 10000})
+// FreeGamesForSteam.on("item", (message) => {
+//   handleMessage(message)
+// })
+// const FreeGameFindings = new snoostorm.SubmissionStream(client, {subreddit: "FreeGameFindings", limit: 1, pollTime: 10000})
+// FreeGameFindings.on("item", (message) => {
+//   handleMessage(message)
+// })
+// const FreeGamesOnSteam = new snoostorm.SubmissionStream(client, {subreddit: "FreeGamesOnSteam", limit: 1, pollTime: 10000})
+// FreeGamesOnSteam.on("item", (message) => {
+//   handleMessage(message)
+// })
+// const freegames = new snoostorm.SubmissionStream(client, {subreddit: "freegames", limit: 1, pollTime: 10000})
+// freegames.on("item", (message) => {
+//   handleMessage(message)
+// })
 
 
 function handleMessage(message) {
