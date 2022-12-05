@@ -21,27 +21,27 @@ const client = new Snoowrap(creds)
 const BOT_START = Date.now() / 1000
 
 // There has to be a better way to do this
-const FreeGamesForPC = new snoostorm.SubmissionStream(client, {subreddit: "FreeGamesForPC", limit: 2, pollTime: 10000})
+const FreeGamesForPC = new snoostorm.SubmissionStream(client, {subreddit: "FreeGamesForPC", limit: 1, pollTime: 10000})
 FreeGamesForPC.on("item", (message) => {
   handleMessage(message)
 })
-const testingground4bots = new snoostorm.SubmissionStream(client, {subreddit: "testingground4bots", limit: 2, pollTime: 20000})
+const testingground4bots = new snoostorm.SubmissionStream(client, {subreddit: "testingground4bots", limit: 1, pollTime: 60000})
 testingground4bots.on("item", (message) => {
   handleMessage(message)
 })
-const FreeGamesForSteam = new snoostorm.SubmissionStream(client, {subreddit: "FreeGamesForSteam", limit: 2, pollTime: 10000})
+const FreeGamesForSteam = new snoostorm.SubmissionStream(client, {subreddit: "FreeGamesForSteam", limit: 1, pollTime: 10000})
 FreeGamesForSteam.on("item", (message) => {
   handleMessage(message)
 })
-const FreeGameFindings = new snoostorm.SubmissionStream(client, {subreddit: "FreeGameFindings", limit: 2, pollTime: 10000})
+const FreeGameFindings = new snoostorm.SubmissionStream(client, {subreddit: "FreeGameFindings", limit: 1, pollTime: 10000})
 FreeGameFindings.on("item", (message) => {
   handleMessage(message)
 })
-const FreeGamesOnSteam = new snoostorm.SubmissionStream(client, {subreddit: "FreeGamesOnSteam", limit: 2, pollTime: 10000})
+const FreeGamesOnSteam = new snoostorm.SubmissionStream(client, {subreddit: "FreeGamesOnSteam", limit: 1, pollTime: 10000})
 FreeGamesOnSteam.on("item", (message) => {
   handleMessage(message)
 })
-const freegames = new snoostorm.SubmissionStream(client, {subreddit: "freegames", limit: 2, pollTime: 10000})
+const freegames = new snoostorm.SubmissionStream(client, {subreddit: "freegames", limit: 1, pollTime: 10000})
 freegames.on("item", (message) => {
   handleMessage(message)
 })
