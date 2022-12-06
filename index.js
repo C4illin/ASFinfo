@@ -24,7 +24,6 @@ let ids = []
 const subreddits = ['FreeGameFindings',"FreeGamesForPC","testingground4bots","FreeGamesForSteam","FreeGamesOnSteam","freegames"]
 
 function checkForPosts() {
-  console.log("Checking for posts")
   subreddits.forEach(subreddit => {
     client.getSubreddit(subreddit).getNew({limit: 3}).then(posts => {
       posts.forEach(post => {
