@@ -21,7 +21,7 @@ const BOT_START = Date.now() / 1000
 
 let ids = []
 
-const subreddits = ['FreeGameFindings',"FreeGamesForPC","testingground4bots","FreeGamesForSteam","FreeGamesOnSteam","freegames"]
+const subreddits = ['FreeGameFindings',"FreeGamesForPC","testingground4bots","FreeGamesForSteam","FreeGamesOnSteam","freegames","Freegamestuff"]
 
 function checkForPosts() {
   subreddits.forEach(subreddit => {
