@@ -24,16 +24,19 @@ let ids = []
 const subreddits = ['FreeGameFindings',"FreeGamesForPC","testingground4bots","FreeGamesForSteam","FreeGamesOnSteam","freegames","Freegamestuff"]
 
 function checkForPosts() {
+  let delay = 10000
   subreddits.forEach(subreddit => {
-    client.getSubreddit(subreddit).getNew({limit: 3}).then(posts => {
+    client.getSubreddit(subreddit).getNew({limit: 5}).then(posts => {
       posts.forEach(post => {
         handlePost(post)
       })
     }).catch(err => {
       console.log(err)
+      console.log("Waiting 10 minutes before trying again")
+      delay = 600000 // 10 minutes
     })
   })
-  setTimeout(checkForPosts, 15000)
+  setTimeout(checkForPosts, delay)
 }
 
 checkForPosts()
