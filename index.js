@@ -29,9 +29,11 @@ function checkForPosts() {
       posts.forEach(post => {
         handlePost(post)
       })
+    }).catch(err => {
+      console.log(err)
     })
   })
-  setTimeout(checkForPosts, 10000)
+  setTimeout(checkForPosts, 15000)
 }
 
 checkForPosts()
