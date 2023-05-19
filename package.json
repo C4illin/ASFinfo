@@ -1,13 +1,13 @@
 {
   "name": "asf-info",
   "version": "1.0.0",
-  "description": "",
+  "description": "get asf command for steam app id",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "C4illin <hi@emrik.org>",
+  "license": "MIT",
   "dependencies": {
     "@octokit/rest": "^19.0.7",
     "dotenv": "^16.0.3",

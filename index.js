@@ -48,33 +48,6 @@ function handlePost(post) {
   }
 }
 
-
-// const FreeGamesForPC = new snoostorm.SubmissionStream(client, {subreddit: "FreeGamesForPC", limit: 1, pollTime: 10000})
-// FreeGamesForPC.on("item", (message) => {
-//   handleMessage(message)
-// })
-// const testingground4bots = new snoostorm.SubmissionStream(client, {subreddit: "testingground4bots", limit: 1, pollTime: 60000})
-// testingground4bots.on("item", (message) => {
-//   handleMessage(message)
-// })
-// const FreeGamesForSteam = new snoostorm.SubmissionStream(client, {subreddit: "FreeGamesForSteam", limit: 1, pollTime: 10000})
-// FreeGamesForSteam.on("item", (message) => {
-//   handleMessage(message)
-// })
-// const FreeGameFindings = new snoostorm.SubmissionStream(client, {subreddit: "FreeGameFindings", limit: 1, pollTime: 10000})
-// FreeGameFindings.on("item", (message) => {
-//   handleMessage(message)
-// })
-// const FreeGamesOnSteam = new snoostorm.SubmissionStream(client, {subreddit: "FreeGamesOnSteam", limit: 1, pollTime: 10000})
-// FreeGamesOnSteam.on("item", (message) => {
-//   handleMessage(message)
-// })
-// const freegames = new snoostorm.SubmissionStream(client, {subreddit: "freegames", limit: 1, pollTime: 10000})
-// freegames.on("item", (message) => {
-//   handleMessage(message)
-// })
-
-
 function handleMessage(message) {
   let appid = null
 
@@ -114,9 +87,13 @@ function handleMessage(message) {
         asfmsg += "\n"
 
         if (result[2]) {
-          asfmsg += "There is a chance this is free DLC for a non-free game."
+          asfmsg += "There is a chance this is free DLC for a non-free game. "
         } else if (result[3]) {
-          asfmsg += "This is most likely permanently free."
+          asfmsg += "This is most likely permanently free. "
+        }
+
+        if (result[4]) {
+          asfmsg += "This is perhaps not released yet."
         }
 
         asfmsg += "\n\n^I'm a bot | [What is ASF](https://github.com/JustArchiNET/ArchiSteamFarm) | [Info](https://www.reddit.com/user/ASFinfo/comments/jmac24/)".replace(/ /gi, "&nbsp;")
@@ -187,6 +164,7 @@ function getPackages(appid, callback) {
         let freeDLC = []
         let paid = false
         let permanentFree = false
+        let releaseSoon = false
         if (packageData.type == "dlc") {
           getPackages(packageData.fullgame.appid, (result) => {
             freePackages = result[0]
@@ -213,22 +191,28 @@ function getPackages(appid, callback) {
           } else {
             paid = true
           }
+
+          if (packageData.release_date && packageData.release_date.coming_soon) {
+            // remove when fully tested
+            console.log(packageData.release_date)
+            releaseSoon = true;
+          }
           
           let packagesDLC = packageData.dlc
           if (packagesDLC) {
             let requests = packagesDLC.map((dlc) => isDLCfree(dlc, freeDLC, freePackages))
             Promise.all(requests).then(() => {
-              callback([freePackages, freeDLC, paid, permanentFree])
+              callback([freePackages, freeDLC, paid, permanentFree, releaseSoon])
             })
           } else {
-            callback([freePackages, freeDLC, paid, permanentFree])
+            callback([freePackages, freeDLC, paid, permanentFree, releaseSoon])
           }
         }
       } else {
         return(null)
       }
     })
-    .catch(err => {throw(err)})
+    .catch(err => {console.error(err)})
 }
 
 // Used to test appids manually
