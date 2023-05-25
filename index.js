@@ -193,6 +193,7 @@ function getPackages(appid, callback) {
           }
 
           // remove when fully tested
+          console.log("Release date:")
           console.log(packageData.release_date)
           if (packageData.release_date && packageData.release_date.coming_soon) {
             releaseSoon = true;
