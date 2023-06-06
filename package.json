@@ -10,7 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "@octokit/rest": "^19.0.11",
-    "dotenv": "^16.0.3",
+    "dotenv": "^16.1.4",
     "node-fetch": "^2.6.7",
     "snoowrap": "^1.23.0"
   }
