@@ -9,7 +9,7 @@
   "author": "C4illin <hi@emrik.org>",
   "license": "MIT",
   "dependencies": {
-    "@octokit/rest": "^19.0.13",
+    "@octokit/rest": "^20.0.1",
     "dotenv": "^16.3.1",
     "node-fetch": "^2.6.12",
     "snoowrap": "^1.23.0"
