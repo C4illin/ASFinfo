@@ -21,12 +21,12 @@ const BOT_START = Date.now() / 1000
 
 let ids = []
 
-const subreddits = ['FreeGameFindings',"FreeGamesForPC","testingground4bots","FreeGamesForSteam","FreeGamesOnSteam","freegames","Freegamestuff"]
+const subreddits = ["FreeGameFindings", "FreeGamesForPC", "testingground4bots", "FreeGamesForSteam", "FreeGamesOnSteam", "freegames", "Freegamestuff"]
 
 function checkForPosts() {
-  let delay = 10000
+  let delay = 20000 // 20 seconds
   subreddits.forEach(subreddit => {
-    client.getSubreddit(subreddit).getNew({limit: 5}).then(posts => {
+    client.getSubreddit(subreddit).getNew({ limit: 5 }).then(posts => {
       posts.forEach(post => {
         handlePost(post)
       })
@@ -51,7 +51,7 @@ function handlePost(post) {
 function handleMessage(message) {
   let appid = null
 
-  if(message.created_utc < BOT_START) {
+  if (message.created_utc < BOT_START) {
     console.log(message.url)
     return
   }
@@ -60,12 +60,12 @@ function handleMessage(message) {
   if (urlsplit[2] == "store.steampowered.com") {
     appid = (urlsplit[4])
   } else if (message.selftext.includes("https://store.steampowered.com/app/")) {
-    appid = message.selftext.slice(message.selftext.indexOf("https://store.steampowered.com/app/")+35).split("/")[0]
+    appid = message.selftext.slice(message.selftext.indexOf("https://store.steampowered.com/app/") + 35).split("/")[0]
   } else if (urlsplit[2] == "steamdb.info") {
     appid = (urlsplit[4])
   }
 
-  if (appid != null) { 
+  if (appid != null) {
     getPackages(appid, (result) => {
       if (result[0].length > 0 || result[1].length > 0) {
         let asfmsg = "    !addlicense asf"
@@ -80,7 +80,7 @@ function handleMessage(message) {
             asfmsg += ",a/"
           } else {
             asfmsg += " a/"
-          }      
+          }
           asfmsg += result[1].join(",a/")
         }
         let idsToClaim = asfmsg
@@ -102,7 +102,7 @@ function handleMessage(message) {
 
         // Experimental gist to keep track of free games
         octokit.gists.get({ gist_id: process.env.gistId }).then(gist => {
-          let newContent = (gist.data.files['Steam Codes'].content + "\n" + idsToClaim.substring(20).replace(/,/g,"\n")).trim()
+          let newContent = (gist.data.files['Steam Codes'].content + "\n" + idsToClaim.substring(20).replace(/,/g, "\n")).trim()
           newContent = Array.from(new Set(newContent.split("\n"))).join("\n")
           return newContent
         }).then((newContent) => {
@@ -110,6 +110,26 @@ function handleMessage(message) {
             gist_id: process.env.gistId,
             files: {
               ['Steam Codes']: {
+                content: newContent
+              }
+            }
+          })
+        })
+
+        // New gist limited to the 40 most recent games
+        octokit.gists.get({ gist_id: "77a4bcb9a9a7a95e5f291badc93ec6cd" }).then(gist => {
+          let newContent = (gist.data.files['Latest Steam Games'].content + "\n" + idsToClaim.substring(20).replace(/,/g, "\n")).trim()
+          newContent = Array.from(new Set(newContent.split("\n"))).join("\n")
+          let lines = newContent.split("\n")
+          if (lines.length > 40) {
+            newContent = lines.slice(lines.length - 40).join("\n")
+          }
+          return newContent
+        }).then((newContent) => {
+          octokit.gists.update({
+            gist_id: "77a4bcb9a9a7a95e5f291badc93ec6cd",
+            files: {
+              ['Latest Steam Games']: {
                 content: newContent
               }
             }
@@ -158,7 +178,7 @@ function getPackages(appid, callback) {
   fetch(`https://store.steampowered.com/api/appdetails?appids=${appid}&filters=basic,packages`)
     .then(res => res.json())
     .then(body => {
-      let packageData  = body[appid].data
+      let packageData = body[appid].data
       if (packageData) {
         let freePackages = []
         let freeDLC = []
@@ -194,11 +214,11 @@ function getPackages(appid, callback) {
 
           // remove when fully tested
           console.log("Release date:")
-          console.log(packageData.release_date)
+          console.log(packageData?.release_date || "No release date found")
           if (packageData.release_date && packageData.release_date.coming_soon) {
             releaseSoon = true;
           }
-          
+
           let packagesDLC = packageData.dlc
           if (packagesDLC) {
             let requests = packagesDLC.map((dlc) => isDLCfree(dlc, freeDLC, freePackages))
@@ -210,10 +230,10 @@ function getPackages(appid, callback) {
           }
         }
       } else {
-        return(null)
+        return (null)
       }
     })
-    .catch(err => {console.error(err)})
+    .catch(err => { console.error(err) })
 }
 
 // good test appIDs
