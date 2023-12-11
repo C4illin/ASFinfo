@@ -31,8 +31,8 @@ function checkForPosts() {
         handlePost(post)
       })
     }).catch(err => {
-      console.log(err)
-      console.log("Waiting 10 minutes before trying again")
+      // console.log(err)
+      console.log("Error, waiting 10 minutes before trying again")
       delay = 600000 // 10 minutes
     })
   })
@@ -89,11 +89,11 @@ function handleMessage(message) {
         if (result[2]) {
           asfmsg += "There is a chance this is free DLC for a non-free game. "
         } else if (result[3]) {
-          asfmsg += "This is most likely permanently free. "
+          asfmsg += "This game is currently free to play. "
         }
 
         if (result[4]) {
-          asfmsg += "This is perhaps not released yet."
+          asfmsg += "This is perhaps not released yet. "
         }
 
         asfmsg += "\n\n^I'm a bot | [What is ASF](https://github.com/JustArchiNET/ArchiSteamFarm) | [Info](https://www.reddit.com/user/ASFinfo/comments/jmac24/)".replace(/ /gi, "&nbsp;")
@@ -216,49 +216,5 @@ function getPackages(appid, callback) {
     .catch(err => {console.error(err)})
 }
 
-// Used to test appids manually
-
 // good test appIDs
 // 570, 1250870, 346110
-
-// getPackages(570, (result) => {
-//   // console.log(result)
-//   if (result[0].length > 0 || result[1].length > 0) {
-//     let asfmsg = "    !addlicense asf"
-//     if (result[0].length > 0) {
-//       asfmsg += " s/"
-//       asfmsg += result[0].join(",s/")
-//     }
-//     if (result[1].length > 0) {
-//       if (asfmsg.length > 23) {
-//         asfmsg += ",a/"
-//       } else {
-//         asfmsg += " a/"
-//       }      
-//       asfmsg += result[1].join(",a/")
-//     }
-//     let idsToClaim = asfmsg
-//     asfmsg += "\n"
-//     if (result[2]) {
-//       asfmsg += "There is a chance this is free DLC for a non-free game."
-//     } else if (result[3]) {
-//       asfmsg += "This is most likely permanently free."
-//     }
-//     asfmsg += "\n\n^I'm a bot | [What is ASF](https://github.com/JustArchiNET/ArchiSteamFarm) | [Info](https://www.reddit.com/user/ASFinfo/comments/jmac24/)".replace(/ /gi, "&nbsp;")
-//     console.log(idsToClaim)
-//     octokit.gists.get({ gist_id: process.env.gistId }).then(gist => {
-//       let newContent = (gist.data.files['Steam Codes'].content + "\n" + idsToClaim.substring(20).replaceAll(",","\n")).trim()
-//       newContent = Array.from(new Set(newContent.split("\n"))).join("\n")
-//       return newContent
-//     }).then((newContent) => {
-//       octokit.gists.update({
-//         gist_id: process.env.gistId,
-//         files: {
-//           ['Steam Codes']: {
-//             content: newContent
-//           }
-//         }
-//       })
-//     })
-//   }
-// })
