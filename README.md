@@ -15,3 +15,5 @@ Want to claim the games automatically?
 https://github.com/C4illin/ASFclaim
 
 All games claimed: https://gist.github.com/C4illin/e8c5cf365d816f2640242bf01d8d3675
+
+Latest games claimed: https://gist.github.com/C4illin/77a4bcb9a9a7a95e5f291badc93ec6cd
