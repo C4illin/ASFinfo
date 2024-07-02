@@ -1,17 +1,18 @@
 {
-  "name": "asf-info",
-  "version": "1.0.0",
-  "description": "get asf command for steam app id",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "C4illin <hi@emrik.org>",
-  "license": "MIT",
-  "dependencies": {
-    "@octokit/rest": "^21.0.0",
-    "dotenv": "^16.4.5",
-    "node-fetch": "^2.7.0",
-    "snoowrap": "^1.23.0"
-  }
+	"name": "asf-info",
+	"version": "1.0.0",
+	"description": "get asf command for steam app id",
+	"main": "index.js",
+	"type": "module",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"author": "C4illin <hi@emrik.org>",
+	"license": "MIT",
+	"dependencies": {
+		"@octokit/rest": "^21.0.0",
+		"dotenv": "^16.4.5",
+		"node-fetch": "^2.7.0",
+		"snoowrap": "^1.23.0"
+	}
 }
