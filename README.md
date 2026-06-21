@@ -14,6 +14,6 @@ Want to claim the games automatically? Check out https://github.com/C4illin/ASFc
 
 <br>
 
-All games claimed: https://gist.github.com/C4illin/e8c5cf365d816f2640242bf01d8d3675
+All games claimed in chronological order from when the bot first discovered them: https://gist.github.com/C4illin/e8c5cf365d816f2640242bf01d8d3675
 
-Latest games claimed: https://gist.github.com/C4illin/77a4bcb9a9a7a95e5f291badc93ec6cd
+The 40 latest games claimed (This list also shows games that was free before and now is free again, which is missed in the other list): https://gist.github.com/C4illin/77a4bcb9a9a7a95e5f291badc93ec6cd
