@@ -10,7 +10,7 @@ https://www.reddit.com/user/ASFinfo/
 
 <br>
 
-Want to claim the games automatically? Check out https://github.com/C4illin/ASFclaim
+Want to claim the games automatically? Check out https://github.com/C4illin/ASFclaim or https://github.com/Citrinate/FreePackages
 
 <br>
 
